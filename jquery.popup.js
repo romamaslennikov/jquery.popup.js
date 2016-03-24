@@ -1,5 +1,5 @@
 /**
- * jquery.popup v. 0.09
+ * jquery.popup.js v. 0.09
  * author: Roman Maslennikov
  * used default: $('#elem').popup();
  * used options default:
