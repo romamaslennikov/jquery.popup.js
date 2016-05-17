@@ -6,7 +6,7 @@ default includes
 * js/jquery.popup.min.js
 * And Latest jquery
 
-[demo](http://www.zzcode.zz.mu/test/jquery.popup.js/main.html)
+[demo](http://www.zzcode.zz.mu/test/jquery.popup.js/demo.html)
 
 
 ## Getting Started
