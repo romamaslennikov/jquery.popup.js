@@ -1,166 +1,187 @@
 /**
- * jquery.popup.js v. 0.09
- * author: Roman Maslennikov
+ * jquery.popup.js v. 0.1.1
+ * author: Roma Maslennikov
  * used default: $('#elem').popup();
  * used options default:
  * background: '#000' // bg overlay
  * position: 'absolute' // position absolute or fixed
  * opacity: 0.5 // opacity overlay
  * zIndex: 123456788 // z-index overlay
- * transform: "scale" //"scale", "translateY", "translateX"
+ * classAnimateShow: '',  // animate.css, link https://daneden.github.io/animate.css/
+ * classAnimateHide: '',  // animate.css, link https://daneden.github.io/animate.css/
+ * scale - default css transform
  * time: 400 // time init
- * onPopupClose: function e(){} // popup close after function
- * onPopupInit: function e(){} // popup init after function
+ * onPopupClose: function{} // popup close after function
+ * onPopupInit: function{} // popup init after function
  **/
-(function ($$) {
-    $$.fn.popup = function (popupParam) {
+;(function ($) {
+  function Popup(obj, options) {
+    this.obj = obj;
+    this._thisHeight = obj.outerHeight();
+    this._window = $(window);
+    this._thisTransformHideDefault = "scale(0)";
+    this._thisTransformShowDefault = "scale(1)";
+    this.popupBg = $("#popup-bg");
+    this.options = $.extend({
+      background: "#000",
+      position: "absolute",
+      opacity: .5,
+      zIndex: 123456788,
+      classAnimateShow: '',  // animate.css, link https://daneden.github.io/animate.css/
+      classAnimateHide: '',  // animate.css, link https://daneden.github.io/animate.css/
+      time: 400,
+      onPopupClose: function(){},
+      onPopupInit: function(){}
+    }, options, true);
 
-        // options default
-
-        popupParam = $$.extend({
-                background: "#000",
-                position: "absolute",
-                opacity: .5,
-                zIndex: 123456788,
-                transform: "scale",   //"scale", "translateY", "translateX"
-                time: 400,
-                onPopupClose: function e(){},
-                onPopupInit: function e(){}
-            },
-            popupParam);
-
-        // var
-
-        var _window = $$(window);
-        var _this = $$(this);
-        var _thisHeight = _this.outerHeight();
-        var _thisWidth = _this.outerWidth();
-        var _thisTransformHide = null;
-        var _thisTransformShow = null;
-
-        // function popupInit
-
-        function popupInit(e) {
-            if(popupParam.transform == "scale"){
-                _thisTransformHide = "scale(0)";
-                _thisTransformShow = "scale(1)";
-            }else if(popupParam.transform == "translateY"){
-                var _thisParamTranslateY  = _window.height() / 2 - _thisHeight / 2 + _thisHeight;
-                _thisTransformHide = "translateY(-" + _thisParamTranslateY + "px" +")";
-                _thisTransformShow = "translateY(0)";
-            }else{
-                var _thisParamTranslateX  = _window.width() / 2 - _thisWidth / 2 + _thisWidth;
-                _thisTransformHide = "translateX(-" + _thisParamTranslateX + "px" +")";
-                _thisTransformShow = "translateX(0)";
-            }
-            _this.css({
-                position: popupParam.position,
-                zIndex: popupParam.zIndex + 1,
-                transform: _thisTransformHide,
-                transition: "transform " + popupParam.time / 1e3 + "s ease-out"
-            }).fadeIn(popupParam.time).css({transform: _thisTransformShow});
-            e();
-        }
-
-        //  function popupClose
-
-        function popupClose(e) {
-            popupBg.fadeOut(popupParam.time);
-            _this.fadeOut(popupParam.time).css({transform: _thisTransformHide});
-            e();
-        }
-
-        // function popupPosition
-
-        function popupPosition() {
-            _this.css({top: _window.height() / 2 - _this.outerHeight() / 2, left: _window.width() / 2 - _this.outerWidth() / 2})
-        }
-
-        // function popupPositionRezise
-
-        function popupPositionRezise() {
-            var $$ = _this.offsetParent();
-            if (_thisHeight > _window.height()) {
-                _this.css({top: -$$.offset().top + _window.scrollTop() + 5})
-            } else {
-                _this.css({top: -$$.offset().top + _window.scrollTop() + _window.height() / 2 - _this.outerHeight() / 2})
-            }
-            if (_this.outerWidth() > _window.width()) {
-                _this.css({left: -$$.offset().left + _window.scrollLeft() + 5})
-            } else {
-                _this.css({left: -$$.offset().left + _window.scrollLeft() + _window.width() / 2 - _this.outerWidth() / 2})
-            }
-        }
-
-        //  function popupBgAddCss
-
-        function popupBgAddCss() {
-            popupBg.height($$(document).height());
-            popupBg.width($$(document).width())
-        }
-
-        //  init overlay
-
-        if (document.getElementById("popup-bg") != null) {
-            $$("#popup-bg").remove()
-        }
-        $$("<div/>", {
-            id: "popup-bg",
-            css: {
-                position: "fixed",
-                top: 0,
-                height: $$(document).height(),
-                width: $$(document).width(),
-                left: 0,
-                display: "none",
-                background: popupParam.background,
-                opacity: popupParam.opacity,
-                filter: "alpha(opacity=" + popupParam.opacity * 100 + ")",
-                zIndex: popupParam.zIndex,
-                cursor: "pointer"
-            }
-        }).appendTo("body");
-        var popupBg = $$("#popup-bg");
-        popupBg.fadeIn(popupParam.time);
-        popupBgAddCss();
-        _window.scroll(function () {
-            popupBg.height($$(document).height());
-            popupBg.width($$(document).width())
-        });
-
-        //  init popup
-
-        popupInit(popupParam.onPopupInit);
-
-        if (popupParam.position == "fixed") {
-            popupPosition();
-            _window.resize(function () {
-                _this.css({transition: "all " + popupParam.time / 1e3 + "s ease-out"});
-                popupPosition();
-                popupBgAddCss();
-            })
-        } else if (popupParam.position == "absolute") {
-            popupPositionRezise();
-            _window.resize(function () {
-                _this.css({transition: "all " + popupParam.time / 1e3 + "s ease-out"});
-                popupPositionRezise();
-                popupBgAddCss();
-            })
-        }
-
-        //on events
-
-        $$("#popup-bg,.js-popup-close").off('click').on({
-            click: function () {
-                popupClose(popupParam.onPopupClose);
-                $$(document).off('keydown');
-            }
-        });
-        $$(document).off('keydown').one('keydown',function ($$) {
-            if ($$.keyCode == 27) {
-                popupClose(popupParam.onPopupClose);
-            }
-        });
-
+    if ( typeof options === 'object' || !options) {
+      this.init();
+      this.initOverlay();
+      this.onEvents();
+    }else {
+      this[options]();
     }
+
+    return this
+  }
+
+  Popup.prototype = {
+    init: function() {
+      var p = this;
+      if(this.options.classAnimateShow != ''){
+        this.obj.removeClass(this.options.classAnimateHide);
+        this.obj.css({
+          position: this.options.position,
+          WebkitAnimationDuration: this.options.time / 1e3 +'s',
+          animationDuration: this.options.time / 1e3 +'s',
+          zIndex: this.options.zIndex+1
+        }).show().addClass('animated ' + this.options.classAnimateShow);
+      }else {
+        this.obj.css({
+          position: this.options.position,
+          zIndex: this.options.zIndex+1,
+          transform: this._thisTransformHideDefault,
+          transition: "transform " + this.options.time / 1e3 + "s ease-out"
+        }).fadeIn(this.options.time).css({transform: this._thisTransformShowDefault});
+      }
+
+      if (this.options.position == "fixed") {
+        this.popupPosition();
+        this._window.resize(function () {
+          p.obj.css({transition: "left " +p.options.time / 1e3 + "s ease-out, top "+ p.options.time / 1e3 + "s ease-out"});
+          p.popupPosition();
+          p.popupBgAddCss();
+        })
+      } else if (this.options.position == "absolute") {
+        this.popupPositionRezise();
+        p._window.resize(function () {
+          p.obj.css({transition: "left " + p.options.time / 1e3 + "s ease-out, top "+ p.options.time / 1e3 + "s ease-out"});
+          p.popupPositionRezise();
+          p.popupBgAddCss();
+        })
+      }
+
+      this.options.onPopupInit();
+
+      return this.obj
+    },
+
+    initOverlay: function () {
+      var p = this;
+      if (document.getElementById("popup-bg") == null) {
+        $("<div/>", {
+          id: "popup-bg",
+          css: {
+            position: "fixed",
+            top: 0,
+            height: $(document).height(),
+            width: $(document).width(),
+            left: 0,
+            display: "none",
+            background: this.options.background,
+            opacity: this.options.opacity,
+            filter: "alpha(opacity=" + this.options.opacity * 100 + ")",
+            zIndex: this.options.zIndex,
+            cursor: "pointer"
+          }
+        }).appendTo("body");
+      }
+      this.popupBg = $("#popup-bg");
+      this.popupBg.show();
+      this.popupBgAddCss();
+      this._window.scroll(function () {
+        p.popupBg.height($(document).height());
+        p.popupBg.width($(document).width());
+      });
+    },
+
+    popupClose: function () {
+      var p = this;
+      if(this.options.classAnimateHide != ''){
+        this.obj.removeClass(this.options.classAnimateShow);
+        this.obj.addClass('animated ' + this.options.classAnimateHide);
+        setTimeout(function () {
+          p.obj.hide();
+        },p.options.time);
+      }else{
+        this.obj.fadeOut(this.options.time).css({transform: this._thisTransformHideDefault});
+        this.obj.removeClass('animated ' + this.options.classAnimateShow);
+      }
+      this.popupBg.fadeOut(this.options.time);
+      return this.obj
+    },
+
+    close: function () {
+       $("#popup-bg,.js-popup-close").click();
+    },
+
+    popupPosition: function () {
+      this.obj.css({top: this._window.height() / 2 - this.obj.outerHeight() / 2, left: this._window.width() / 2 - this.obj.outerWidth() / 2});
+      return this.obj
+    },
+
+    popupPositionRezise: function () {
+      var $ = this.obj.offsetParent();
+      if (this._thisHeight > this._window.height()) {
+        this.obj.css({top: -$.offset().top + this._window.scrollTop() + 5})
+      } else {
+        this.obj.css({top: -$.offset().top + this._window.scrollTop() + this._window.height() / 2 - this.obj.outerHeight() / 2})
+      }
+      if (this.obj.outerWidth() > this._window.width()) {
+        this.obj.css({left: -$.offset().left + this._window.scrollLeft() + 5})
+      } else {
+        this.obj.css({left: -$.offset().left + this._window.scrollLeft() + this._window.width() / 2 - this.obj.outerWidth() / 2})
+      };
+      return this.obj
+    },
+
+    popupBgAddCss: function () {
+      this.popupBg.height($(document).height());
+      this.popupBg.width($(document).width());
+    },
+
+    onEvents: function () {
+      var p = this;
+      $("#popup-bg,.js-popup-close").off('click').on({
+        click: function () {
+          p.popupClose(p.options.onPopupClose());
+          $(document).off('keydown');
+        }
+      });
+      $(document).off('keydown').one('keydown',function ($) {
+        if ($.keyCode == 27) {
+          p.popupClose(p.options.onPopupClose());
+        }
+      });
+    }
+  };
+
+
+  $.fn.popup = function(options) {
+    var obj = this;
+    new Popup(obj, options);
+    return  this;
+  }
 })(jQuery);
+
+
