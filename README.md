@@ -14,7 +14,7 @@ default includes
 <script src="js/jquery.popup.min.js"></script>
 ```
 
-### Installing
+## Installing
 
 Used default:
 ```
@@ -35,7 +35,7 @@ Used click and animate.css:
 ```
 
 
-### Settings
+## Settings
 
 Used default options:
 ```
@@ -54,17 +54,17 @@ $('#elem').popup({
 
 scale - default css transform
 
-### Method closed
+## Method closed
 
 ```
 $('#elem').popup('close');  // close popup
 ```
 
-### Version
+## Version
 
 0.1.1
 
-### License
+## License
 
 MIT
 
