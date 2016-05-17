@@ -1,6 +1,6 @@
 # Jquery.popup.js 
 
-Modals and popups for you applications.
+Modals and popups for you applications. Support animate.css.
 
 default includes
 * js/jquery.popup.min.js

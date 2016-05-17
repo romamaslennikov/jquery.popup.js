@@ -1,6 +1,6 @@
 /**
  * jquery.popup.js v. 0.1.1
- * author: Roma Maslennikov
+ * author: Roma Maslennikov  https://github.com/romamaslennikov/jquery.popup.js
  * used default: $('#elem').popup();
  * used options default:
  * background: '#000' // bg overlay
