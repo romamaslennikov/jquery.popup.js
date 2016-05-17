@@ -1,4 +1,4 @@
-# jquery.popup.js 
+# Jquery.popup.js 
 
 Modals and popups for you applications.
 
