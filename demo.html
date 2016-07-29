@@ -21,20 +21,30 @@
             -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.15);
             -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.15);
             box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.15);
+            max-width: 85%;
         }
         .item-close{
             cursor: pointer;
-            right: -14px;
-            top: -18px;
+            right: 2px;
+            top: 2px;
             position: absolute;
             font-family:sans-serif;
+            background: green;
+            border-radius: 100%;
+            font-size: 12px;
+            height: 20px;
+            line-height: 19px;
+            text-align: center;
+            width: 20px;
+            color: #fff;
         }
     </style>
 </head>
 <body>
+
 <a class="btn" href="#">Demo popup</a>
 
-<div class="item">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, ad adipisci, consectetur culpa dignissimos ducimus eius fugit nostrum nulla placeat porro sint sit tempora ut veritatis. Dolorum est eveniet soluta!
+<div id="item" class="item">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, ad adipisci, consectetur culpa dignissimos ducimus eius fugit nostrum nulla placeat porro sint sit tempora ut veritatis. Dolorum est eveniet soluta!
     Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
     incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
     nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
@@ -72,29 +82,31 @@
                     classAnimateShow: 'rollIn',
                     classAnimateHide: 'hinge',
                     onPopupClose: function e(){
-                        console.log('0')
+                       // console.log('0')
                     },
                      onPopupInit: function e(){
-                        console.log('1')
+                       // console.log('1')
                     }
                 });
             });
 
-            $('.item').popup({
+            $('#item').popup({
                 time: 1000,
                 classAnimateShow: 'rollIn',
                 classAnimateHide: 'hinge',
                  onPopupClose: function e(){
-                        console.log('0')
+                        //console.log('0')
                     },
                      onPopupInit: function e(){
-                        console.log('1')
+                        //console.log('1')
                     }
             });
 
         });
     })(jQuery);
 </script>
+
 <script src="jquery.popup.min.js"></script>
+
 </body>
 </html>

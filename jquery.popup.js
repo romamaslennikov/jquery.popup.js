@@ -1,5 +1,5 @@
 /**
- * jquery.popup.js v. 1.1.1
+ * jquery.popup.js v. 1.1.2
  * author: Roma Maslennikov  https://github.com/romamaslennikov/jquery.popup.js
  * used default: $('#elem').popup();
  * used options default:
@@ -14,7 +14,7 @@
  * onPopupClose: function{} // popup close after function
  * onPopupInit: function{} // popup init after function
  **/
-;(function ($) {
+;(function ($,window) {
   function Popup(obj, options) {
     this.obj = obj;
     this._thisHeight = obj.outerHeight();
@@ -107,6 +107,14 @@
         }).appendTo("body");
       }
       this.popupBg = $("#popup-bg");
+      if(this.popupBg.data('count') === undefined){
+        this.popupBg.data('count',1);
+        var count = this.popupBg.data('count');
+      }else{
+        var count = this.popupBg.data('count');
+        this.popupBg.data('count',++count);
+      }
+      console.log(this.popupBg.data('count'));
       this.popupBg.show();
       this.popupBgAddCss();
       this._window.scroll(function () {
@@ -127,12 +135,17 @@
         this.obj.fadeOut(this.options.time).css({transform: this._thisTransformHideDefault});
         this.obj.removeClass('animated ' + this.options.classAnimateShow);
       }
-      this.popupBg.fadeOut(this.options.time);
+      if(this.popupBg.data('count') == 1){
+        this.popupBg.fadeOut(this.options.time);
+      }
+      var count = this.popupBg.data('count');
+      this.popupBg.data('count',--count);
+
       return this.obj
     },
 
     close: function () {
-       $("#popup-bg,.js-popup-close").click();
+       $("#popup-bg,.js-popup-close").trigger('click');
     },
 
     popupPosition: function () {
@@ -141,16 +154,16 @@
     },
 
     popupPositionRezise: function () {
-      var $ = this.obj.offsetParent();
-      if (this._thisHeight > this._window.height()) {
-        this.obj.css({top: -$.offset().top + this._window.scrollTop() + 5})
+      var par = this.obj.offsetParent();
+      if ($(this.obj).outerHeight() > $(window).height()) {
+        this.obj.css({top: 0});
       } else {
-        this.obj.css({top: -$.offset().top + this._window.scrollTop() + this._window.height() / 2 - this.obj.outerHeight() / 2})
+        this.obj.css({top: -par.offset().top + this._window.scrollTop() + this._window.height() / 2 - this.obj.outerHeight() / 2})
       }
       if (this.obj.outerWidth() > this._window.width()) {
-        this.obj.css({left: -$.offset().left + this._window.scrollLeft() + 5})
+        this.obj.css({left: -par.offset().left + this._window.scrollLeft()})
       } else {
-        this.obj.css({left: -$.offset().left + this._window.scrollLeft() + this._window.width() / 2 - this.obj.outerWidth() / 2})
+        this.obj.css({left: -par.offset().left + this._window.scrollLeft() + this._window.width() / 2 - this.obj.outerWidth() / 2})
       };
       return this.obj
     },
@@ -162,13 +175,19 @@
 
     onEvents: function () {
       var p = this;
-      $("#popup-bg,.js-popup-close").off('click').on({
+      $("#popup-bg").on({
         click: function () {
           p.popupClose(p.options.onPopupClose());
           $(document).off('keydown');
         }
       });
-      $(document).off('keydown').one('keydown',function ($) {
+      $(".js-popup-close",p.obj).on({
+        click: function () {
+          p.popupClose(p.options.onPopupClose());
+          $(document).off('keydown');
+        }
+      });
+      $(document).off('keydown').on('keydown',function ($) {
         if ($.keyCode == 27) {
           p.popupClose(p.options.onPopupClose());
         }
@@ -182,6 +201,6 @@
     new Popup(obj, options);
     return  this;
   }
-})(jQuery);
+})(jQuery,window);
 
 
