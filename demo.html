@@ -23,6 +23,9 @@
             box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.15);
             max-width: 85%;
         }
+        .item--mod{
+            width: 500px;
+        }
         .item-close{
             cursor: pointer;
             right: 2px;
@@ -42,9 +45,40 @@
 </head>
 <body>
 
-<a class="btn" href="#">Demo popup</a>
+<a class="btn1" href="#">Demo popup1</a>
+
+<a class="btn2" href="#">Demo popup2</a>
+
 
 <div id="item" class="item">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, ad adipisci, consectetur culpa dignissimos ducimus eius fugit nostrum nulla placeat porro sint sit tempora ut veritatis. Dolorum est eveniet soluta!
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+    eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+    sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing
+    elit. Amet culpa delectus doloremque ducimus error exercitationem facilis, hic, magnam nam neque nulla obcaecati
+    quam quis sapiente vitae? Asperiores assumenda delectus vel!Lorem ipsum dolor sit amet, consectetur adipisicing
+    elit, sed do eiusmod tempor
+    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+    eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+    sunt in culpa qui officia deserunt mollit anim id est laborum.Aliquid amet aut consectetur consequuntur corporis
+    delectus doloremque dolorum error esse, exercitationem facilis inventore maiores molestias nam nisi nostrum optio
+    qui, quisquam sunt tempora tenetur voluptate voluptatibus? Autem, dicta, porro.Lorem ipsum dolor sit amet,
+    consectetur adipisicing elit, sed do eiusmod tempor
+    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+    eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+    sunt in culpa qui officia deserunt mollit anim id est laborum.Aliquid autem dicta doloremque excepturi fugiat quasi
+    repellendus voluptates? Cupiditate dolores eligendi esse et molestias nostrum quaerat quia sapiente soluta ullam. Ad
+    asperiores assumenda consequuntur obcaecati quo sint tenetur veniam.
+    <b class="item-close js-popup-close">x</b>
+</div>
+
+<div id="item1" class="item item--mod"><i>Lorem</i> ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, ad adipisci, consectetur culpa dignissimos ducimus eius fugit nostrum nulla placeat porro sint sit tempora ut veritatis. Dolorum est eveniet soluta!
     Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
     incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
     nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
@@ -76,8 +110,8 @@
     (function ($) {
         $(function () {
 
-            $('.btn').on('click',function () {
-                $('.item').popup({
+            $('.btn1').on('click',function () {
+                $('#item').popup({
                     time: 1000,
                     classAnimateShow: 'rollIn',
                     classAnimateHide: 'hinge',
@@ -90,10 +124,37 @@
                 });
             });
 
+            $('.btn2').on('click',function () {
+                $('#item1').popup({
+                    time: 1000,
+                    classAnimateShow: 'rotateInUpLeft',
+                    classAnimateHide: 'rotateOutDownLeft',
+                    onPopupClose: function e(){
+                        // console.log('0')
+                    },
+                    onPopupInit: function e(){
+                        // console.log('1')
+                    }
+                });
+            });
+
+
             $('#item').popup({
                 time: 1000,
                 classAnimateShow: 'rollIn',
                 classAnimateHide: 'hinge',
+                 onPopupClose: function e(){
+                        //console.log('0')
+                    },
+                     onPopupInit: function e(){
+                        //console.log('1')
+                    }
+            });
+
+             $('#item1').popup({
+                time: 1000,
+                classAnimateShow: 'rotateInUpLeft',
+                classAnimateHide: 'rotateOutDownLeft',
                  onPopupClose: function e(){
                         //console.log('0')
                     },

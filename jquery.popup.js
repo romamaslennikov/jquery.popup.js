@@ -1,18 +1,7 @@
 /**
- * jquery.popup.js v. 1.1.2
- * author: Roma Maslennikov  https://github.com/romamaslennikov/jquery.popup.js
- * used default: $('#elem').popup();
- * used options default:
- * background: '#000' // bg overlay
- * position: 'absolute' // position absolute or fixed
- * opacity: 0.5 // opacity overlay
- * zIndex: 123456788 // z-index overlay
- * classAnimateShow: '',  // animate.css, link https://daneden.github.io/animate.css/
- * classAnimateHide: '',  // animate.css, link https://daneden.github.io/animate.css/
- * scale - default css transform
- * time: 400 // time init
- * onPopupClose: function{} // popup close after function
- * onPopupInit: function{} // popup init after function
+ * jquery.popup.js v. 1.1.3
+ * author: Roma Maslennikov
+ * link: https://github.com/romamaslennikov/jquery.popup.js
  **/
 ;(function ($,window) {
   function Popup(obj, options) {
@@ -22,6 +11,7 @@
     this._thisTransformHideDefault = "scale(0)";
     this._thisTransformShowDefault = "scale(1)";
     this.popupBg = $("#popup-bg");
+    this.count = "";
     this.options = $.extend({
       background: "#000",
       position: "absolute",
@@ -90,6 +80,7 @@
       var p = this;
       if (document.getElementById("popup-bg") == null) {
         $("<div/>", {
+          "data-count": "0",
           id: "popup-bg",
           css: {
             position: "fixed",
@@ -107,14 +98,8 @@
         }).appendTo("body");
       }
       this.popupBg = $("#popup-bg");
-      if(this.popupBg.data('count') === undefined){
-        this.popupBg.data('count',1);
-        var count = this.popupBg.data('count');
-      }else{
-        var count = this.popupBg.data('count');
-        this.popupBg.data('count',++count);
-      }
-      console.log(this.popupBg.data('count'));
+      p.count = this.popupBg.data('count');
+      this.popupBg.data('count',++p.count);
       this.popupBg.show();
       this.popupBgAddCss();
       this._window.scroll(function () {
@@ -125,6 +110,10 @@
 
     popupClose: function () {
       var p = this;
+      var popupBg = $("#popup-bg");
+      p.count = popupBg.data('count');
+      popupBg.data('count',--p.count);
+      p.count = popupBg.data('count');
       if(this.options.classAnimateHide != ''){
         this.obj.removeClass(this.options.classAnimateShow);
         this.obj.addClass('animated ' + this.options.classAnimateHide);
@@ -135,17 +124,15 @@
         this.obj.fadeOut(this.options.time).css({transform: this._thisTransformHideDefault});
         this.obj.removeClass('animated ' + this.options.classAnimateShow);
       }
-      if(this.popupBg.data('count') == 1){
+      if(p.count == 0){
         this.popupBg.fadeOut(this.options.time);
       }
-      var count = this.popupBg.data('count');
-      this.popupBg.data('count',--count);
-
       return this.obj
     },
 
     close: function () {
-       $("#popup-bg,.js-popup-close").trigger('click');
+      var p = this;
+      p.popupBg.trigger('click');
     },
 
     popupPosition: function () {
@@ -154,16 +141,16 @@
     },
 
     popupPositionRezise: function () {
-      var par = this.obj.offsetParent();
-      if ($(this.obj).outerHeight() > $(window).height()) {
-        this.obj.css({top: 0});
+      var $ = this.obj.offsetParent();
+      if (this._thisHeight > this._window.height()) {
+        this.obj.css({top: -$.offset().top + this._window.scrollTop() + 5})
       } else {
-        this.obj.css({top: -par.offset().top + this._window.scrollTop() + this._window.height() / 2 - this.obj.outerHeight() / 2})
+        this.obj.css({top: -$.offset().top + this._window.scrollTop() + this._window.height() / 2 - this.obj.outerHeight() / 2})
       }
       if (this.obj.outerWidth() > this._window.width()) {
-        this.obj.css({left: -par.offset().left + this._window.scrollLeft()})
+        this.obj.css({left: -$.offset().left + this._window.scrollLeft() + 5})
       } else {
-        this.obj.css({left: -par.offset().left + this._window.scrollLeft() + this._window.width() / 2 - this.obj.outerWidth() / 2})
+        this.obj.css({left: -$.offset().left + this._window.scrollLeft() + this._window.width() / 2 - this.obj.outerWidth() / 2})
       };
       return this.obj
     },
@@ -175,20 +162,23 @@
 
     onEvents: function () {
       var p = this;
-      $("#popup-bg").on({
+      p.popupBg.on({
         click: function () {
+          p.count = 1;
+          p.popupBg.data('count',1);
           p.popupClose(p.options.onPopupClose());
           $(document).off('keydown');
         }
       });
-      $(".js-popup-close",p.obj).on({
+      $(".js-popup-close",p.obj).off().on({
         click: function () {
           p.popupClose(p.options.onPopupClose());
-          $(document).off('keydown');
         }
       });
-      $(document).off('keydown').on('keydown',function ($) {
+      $(document).on('keydown',function ($) {
         if ($.keyCode == 27) {
+          p.count = 1;
+          p.popupBg.data('count',1);
           p.popupClose(p.options.onPopupClose());
         }
       });
