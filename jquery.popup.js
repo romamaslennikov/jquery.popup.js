@@ -1,18 +1,7 @@
 /**
  * jquery.popup.js v. 1.1.2
- * author: Roma Maslennikov  https://github.com/romamaslennikov/jquery.popup.js
- * used default: $('#elem').popup();
- * used options default:
- * background: '#000' // bg overlay
- * position: 'absolute' // position absolute or fixed
- * opacity: 0.5 // opacity overlay
- * zIndex: 123456788 // z-index overlay
- * classAnimateShow: '',  // animate.css, link https://daneden.github.io/animate.css/
- * classAnimateHide: '',  // animate.css, link https://daneden.github.io/animate.css/
- * scale - default css transform
- * time: 400 // time init
- * onPopupClose: function{} // popup close after function
- * onPopupInit: function{} // popup init after function
+ * author: Roma Maslennikov
+ * link: https://github.com/romamaslennikov/jquery.popup.js
  **/
 ;(function ($,window) {
   function Popup(obj, options) {
