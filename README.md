@@ -64,7 +64,7 @@ $('#elem').popup('close');  // close popup
 
 ## Version
 
-1.1.3
+1.1.4
 
 ## License
 

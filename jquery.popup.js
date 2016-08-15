@@ -1,5 +1,5 @@
 /**
- * jquery.popup.js v. 1.1.3
+ * jquery.popup.js v. 1.1.4
  * author: Roma Maslennikov
  * link: https://github.com/romamaslennikov/jquery.popup.js
  **/
@@ -170,8 +170,10 @@
           $(document).off('keydown');
         }
       });
-      $(".js-popup-close",p.obj).off().on({
+      $(".js-popup-close",p.obj).on({
         click: function () {
+          p.count = 1;
+          p.popupBg.data('count',1);
           p.popupClose(p.options.onPopupClose());
         }
       });
