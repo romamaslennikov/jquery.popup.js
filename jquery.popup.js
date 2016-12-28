@@ -1,9 +1,9 @@
 /**
- * jquery.popup.js v. 1.1.4
+ * jquery.popup.js v. 2.0.0
  * author: Roma Maslennikov
  * link: https://github.com/romamaslennikov/jquery.popup.js
  **/
-;(function ($,window) {
+;(function ($, window) {
   function Popup(obj, options) {
     this.obj = obj;
     this._thisHeight = obj.outerHeight();
@@ -20,15 +20,17 @@
       classAnimateShow: '',  // animate.css, link https://daneden.github.io/animate.css/
       classAnimateHide: '',  // animate.css, link https://daneden.github.io/animate.css/
       time: 400,
-      onPopupClose: function(){},
-      onPopupInit: function(){}
+      onPopupClose: function () {
+      },
+      onPopupInit: function () {
+      }
     }, options, true);
 
-    if ( typeof options === 'object' || !options) {
+    if (typeof options === 'object' || !options) {
       this.init();
       this.initOverlay();
       this.onEvents();
-    }else {
+    } else {
       this[options]();
     }
 
@@ -36,20 +38,23 @@
   }
 
   Popup.prototype = {
-    init: function() {
+    init: function () {
+      this.wrapper('popup-wrapper', true);
+      this.lock('-lock', '-blur', true);
       var p = this;
-      if(this.options.classAnimateShow != ''){
+      if (this.options.classAnimateShow != '') {
         this.obj.removeClass(this.options.classAnimateHide);
         this.obj.css({
           position: this.options.position,
-          WebkitAnimationDuration: this.options.time / 1e3 +'s',
-          animationDuration: this.options.time / 1e3 +'s',
-          zIndex: this.options.zIndex+1
+          WebkitAnimationDuration: this.options.time / 1e3 + 's',
+          animationDuration: this.options.time / 1e3 + 's',
+          zIndex: this.options.zIndex + 1
         }).show().addClass('animated ' + this.options.classAnimateShow);
-      }else {
+      } else {
         this.obj.css({
+          pointerEvents: "auto",
           position: this.options.position,
-          zIndex: this.options.zIndex+1,
+          zIndex: this.options.zIndex + 1,
           transform: this._thisTransformHideDefault,
           transition: "transform " + this.options.time / 1e3 + "s ease-out"
         }).fadeIn(this.options.time).css({transform: this._thisTransformShowDefault});
@@ -58,14 +63,14 @@
       if (this.options.position == "fixed") {
         this.popupPosition();
         this._window.resize(function () {
-          p.obj.css({transition: "left " +p.options.time / 1e3 + "s ease-out, top "+ p.options.time / 1e3 + "s ease-out"});
+          p.obj.css({transition: "left " + p.options.time / 1e3 + "s ease-out, top " + p.options.time / 1e3 + "s ease-out"});
           p.popupPosition();
           p.popupBgAddCss();
         })
       } else if (this.options.position == "absolute") {
         this.popupPositionRezise();
         p._window.resize(function () {
-          p.obj.css({transition: "left " + p.options.time / 1e3 + "s ease-out, top "+ p.options.time / 1e3 + "s ease-out"});
+          p.obj.css({transition: "left " + p.options.time / 1e3 + "s ease-out, top " + p.options.time / 1e3 + "s ease-out"});
           p.popupPositionRezise();
           p.popupBgAddCss();
         })
@@ -74,6 +79,38 @@
       this.options.onPopupInit();
 
       return this.obj
+    },
+
+    wrapper: function (className, open) {
+      var p = this;
+      if (open) {
+        this.obj.wrap("<div class='" + className + "'></div>");
+        $('.' + className)
+          .css({"z-index": this.options.zIndex + 2})
+          .click(function () {
+            p.popupClose();
+          });
+        p.obj.click(function (e) {
+          e.stopPropagation();
+        });
+      } else {
+        setTimeout(function () {
+          p.obj.unwrap('.' + className);
+        }, p.options.time)
+      }
+    },
+
+    lock: function (classLock, classMod, open) {
+      var html = $('html');
+      if (open) {
+        html.addClass(classMod);
+        html.addClass(classLock);
+      } else {
+        html.removeClass(classMod);
+        setTimeout(function () {
+          html.removeClass(classLock);
+        }, this.options.time)
+      }
     },
 
     initOverlay: function () {
@@ -99,7 +136,7 @@
       }
       this.popupBg = $("#popup-bg");
       p.count = this.popupBg.data('count');
-      this.popupBg.data('count',++p.count);
+      this.popupBg.data('count', ++p.count);
       this.popupBg.show();
       this.popupBgAddCss();
       this._window.scroll(function () {
@@ -112,22 +149,22 @@
       var p = this;
       var popupBg = $("#popup-bg");
       p.count = popupBg.data('count');
-      popupBg.data('count',--p.count);
+      popupBg.data('count', --p.count);
       p.count = popupBg.data('count');
-      if(this.options.classAnimateHide != ''){
+      if (this.options.classAnimateHide != '') {
         this.obj.removeClass(this.options.classAnimateShow);
         this.obj.addClass('animated ' + this.options.classAnimateHide);
         setTimeout(function () {
           p.obj.hide();
-        },p.options.time);
-      }else{
+        }, p.options.time);
+      } else {
         this.obj.fadeOut(this.options.time).css({transform: this._thisTransformHideDefault});
         this.obj.removeClass('animated ' + this.options.classAnimateShow);
       }
-      if(p.count == 0){
-        this.popupBg.fadeOut(this.options.time);
-      }
-      return this.obj
+      this.popupBg.fadeOut(this.options.time);
+      p.wrapper('popup-wrapper');
+      p.lock('-lock', '-blur');
+      return this.obj;
     },
 
     close: function () {
@@ -136,7 +173,10 @@
     },
 
     popupPosition: function () {
-      this.obj.css({top: this._window.height() / 2 - this.obj.outerHeight() / 2, left: this._window.width() / 2 - this.obj.outerWidth() / 2});
+      this.obj.css({
+        top: this._window.height() / 2 - this.obj.outerHeight() / 2,
+        left: this._window.width() / 2 - this.obj.outerWidth() / 2
+      });
       return this.obj
     },
 
@@ -151,7 +191,8 @@
         this.obj.css({left: -$.offset().left + this._window.scrollLeft() + 5})
       } else {
         this.obj.css({left: -$.offset().left + this._window.scrollLeft() + this._window.width() / 2 - this.obj.outerWidth() / 2})
-      };
+      }
+      ;
       return this.obj
     },
 
@@ -165,34 +206,33 @@
       p.popupBg.on({
         click: function () {
           p.count = 1;
-          p.popupBg.data('count',1);
-          p.popupClose(p.options.onPopupClose());
+          p.popupBg.data('count', 1);
+          p.popupClose();
           $(document).off('keydown');
         }
       });
-      $(".js-popup-close",p.obj).on({
+      $(".js-popup-close", p.obj).on({
         click: function () {
           p.count = 1;
-          p.popupBg.data('count',1);
-          p.popupClose(p.options.onPopupClose());
+          p.popupBg.data('count', 1);
+          p.popupClose();
         }
       });
-      $(document).on('keydown',function ($) {
+      $(document).on('keydown', function ($) {
         if ($.keyCode == 27) {
           p.count = 1;
-          p.popupBg.data('count',1);
-          p.popupClose(p.options.onPopupClose());
+          p.popupBg.data('count', 1);
+          p.popupClose();
         }
       });
     }
   };
 
 
-  $.fn.popup = function(options) {
+  $.fn.popup = function (options) {
     var obj = this;
     new Popup(obj, options);
-    return  this;
+    return this;
   }
-})(jQuery,window);
-
+})(jQuery, window);
 
