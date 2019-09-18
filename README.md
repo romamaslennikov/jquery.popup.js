@@ -59,7 +59,7 @@ scale - default css transform
 ## Method closed
 
 ```
-$('#elem').popup('close');  // close popup
+$('#item').data('popup').close(); // close popup
 ```
 
 ## Version

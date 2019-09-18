@@ -1,6 +1,185 @@
-/**
- * jquery.popup.js v. 2.0.1
- * author: Roma Maslennikov
- * link: https://github.com/romamaslennikov/jquery.popup.js
- **/
-!function(n,i){function o(t,o){return this.obj=t,this._thisHeight=t.outerHeight(),this._window=n(i),this._thisTransformHideDefault="scale(0)",this._thisTransformShowDefault="scale(1)",this.popupBg=n("#popup-bg"),this.options=n.extend({background:"#000",position:"absolute",opacity:.5,zIndex:123456788,classAnimateShow:"",classAnimateHide:"",time:400,onPopupClose:function(){},onPopupInit:function(){}},o,!0),"object"!=typeof o&&o?this[o]():(t.length&&this.init(),t.length&&this.initOverlay(),t.length&&this.onEvents()),this}o.prototype={init:function(){this.lock("-lock","-blur",!0);var t=this;return""!=this.options.classAnimateShow?(this.obj.removeClass(this.options.classAnimateHide),this.obj.css({position:this.options.position,WebkitAnimationDuration:this.options.time/1e3+"s",animationDuration:this.options.time/1e3+"s",zIndex:this.options.zIndex+1}).show().addClass("animated "+this.options.classAnimateShow)):this.obj.css({pointerEvents:"auto",position:this.options.position,zIndex:this.options.zIndex+1,transform:this._thisTransformHideDefault,transition:"transform "+this.options.time/1e3+"s ease-out"}).fadeIn(this.options.time).css({transform:this._thisTransformShowDefault}),"fixed"==this.options.position?(this.popupPosition(),this._window.resize(function(){t.obj.css({transition:"left "+t.options.time/1e3+"s ease-out, top "+t.options.time/1e3+"s ease-out"}),t.popupPosition()})):"absolute"==this.options.position&&(this.popupPositionRezise(),t._window.resize(function(){t.obj.css({transition:"left "+t.options.time/1e3+"s ease-out, top "+t.options.time/1e3+"s ease-out"}),t.popupPositionRezise()})),this.options.onPopupInit(),this.obj},lock:function(t,o,i){var s=n("html");i?(s.addClass(o),s.addClass(t)):(s.removeClass(o),setTimeout(function(){s.removeClass(t)},this.options.time))},initOverlay:function(){null==document.getElementById("popup-bg")&&n("<div/>",{"data-count":"0",id:"popup-bg",css:{position:"fixed",top:0,height:"100%",width:"100%",left:0,display:"none",background:this.options.background,opacity:this.options.opacity,zIndex:this.options.zIndex,cursor:"pointer"}}).appendTo("body"),this.popupBg=n("#popup-bg"),this.popupBg.show()},popupClose:function(){var t=this;n("#popup-bg");return""!=this.options.classAnimateHide?(this.obj.removeClass(this.options.classAnimateShow),this.obj.addClass("animated "+this.options.classAnimateHide),setTimeout(function(){t.obj.hide()},t.options.time)):(this.obj.fadeOut(this.options.time).css({transform:this._thisTransformHideDefault}),this.obj.removeClass("animated "+this.options.classAnimateShow)),this.popupBg.fadeOut(this.options.time),t.lock("-lock","-blur"),this.obj},close:function(){this.popupBg.trigger("click")},popupPosition:function(){return this.obj.css({top:this._window.height()/2-this.obj.outerHeight()/2,left:this._window.width()/2-this.obj.outerWidth()/2}),this.obj},popupPositionRezise:function(){var t=this.obj.offsetParent();return this._thisHeight>this._window.height()?this.obj.css({top:-t.offset().top+this._window.scrollTop()+5}):this.obj.css({top:-t.offset().top+this._window.scrollTop()+this._window.height()/2-this.obj.outerHeight()/2}),this.obj.outerWidth()>this._window.width()?this.obj.css({left:-t.offset().left+this._window.scrollLeft()+5}):this.obj.css({left:-t.offset().left+this._window.scrollLeft()+this._window.width()/2-this.obj.outerWidth()/2}),this.obj},onEvents:function(){var o=this;o.popupBg.on({click:function(){o.popupClose(),n(document).off("keydown")}}),n(".js-popup-close",o.obj).on({click:function(){o.popupClose()}}),n(document).on("keydown",function(t){27===t.keyCode&&o.popupClose()})}},n.fn.popup=function(t){return new o(this,t),this}}(jQuery,window);
+;(($, window) => {
+  class Popup {
+    constructor(self, options) {
+      this.self = self;
+      this._thisHeight = self.outerHeight();
+      this._window = $(window);
+      this._thisTransformHideDefault = 'scale(0)';
+      this._thisTransformShowDefault = 'scale(1)';
+      this._opened = false;
+      this.popupBg = $('#popup-bg');
+      this.options = $.extend({
+        background: '#000',
+        position: 'absolute',
+        opacity: .5,
+        zIndex: 123456788,
+        classAnimateShow: '',  // animate.css, link https://daneden.github.io/animate.css/
+        classAnimateHide: '',  // animate.css, link https://daneden.github.io/animate.css/
+        time: 400,
+        onPopupClose: () => {
+        },
+        onPopupInit: () => {
+        },
+      }, options, true);
+
+      if (typeof options === 'object' || !options) {
+        if (self.length) {
+          this.init().events();
+        }
+      } else {
+        this[options]();
+      }
+
+      return this
+    }
+
+    init() {
+      this._opened = true;
+      this.lock('-lock', '-popup-opened', true);
+      if (this.options.classAnimateShow !== '') {
+        this.self.removeClass(this.options.classAnimateHide);
+        this.self.css({
+          position: this.options.position,
+          WebkitAnimationDuration: this.options.time / 1e3 + 's',
+          animationDuration: this.options.time / 1e3 + 's',
+          zIndex: this.options.zIndex + 1
+        }).show().addClass('animated ' + this.options.classAnimateShow);
+      } else {
+        this.self.css({
+          position: this.options.position,
+          zIndex: this.options.zIndex + 1,
+          transform: this._thisTransformHideDefault,
+          transition: 'transform ' + this.options.time / 1e3 + 's ease-out'
+        }).fadeIn(this.options.time).css({transform: this._thisTransformShowDefault});
+      }
+
+      if (this.options.position === 'fixed') {
+        this.popupPosition();
+        this._window.on('resize', () => {
+          this.self.css({transition: 'left ' + this.options.time / 1e3 + 's ease-out, top ' + this.options.time / 1e3 + 's ease-out'});
+          this.popupPosition();
+        })
+      } else if (this.options.position === 'absolute') {
+        this.popupPositionRezise();
+        this._window.on('resize', () => {
+          this.self.css({transition: 'left ' + this.options.time / 1e3 + 's ease-out, top ' + this.options.time / 1e3 + 's ease-out'});
+          this.popupPositionRezise();
+        })
+      }
+
+      this.options.onPopupInit();
+
+      this.overlay();
+
+      return this
+    }
+
+    lock(classLock, classMod, open) {
+      const html = $('html');
+      if (open) {
+        html.addClass(classMod + ' ' + classLock);
+      } else {
+        html.removeClass(classMod);
+        setTimeout(function () {
+          html.removeClass(classLock);
+        }, this.options.time)
+      }
+    }
+
+    overlay() {
+      if (document.getElementById('popup-bg') === null) {
+        $('<div/>', {
+          id: 'popup-bg',
+          css: {
+            position: 'fixed',
+            top: 0,
+            height: '100%',
+            width: '100%',
+            left: 0,
+            display: 'none',
+            background: this.options.background,
+            opacity: this.options.opacity,
+            zIndex: this.options.zIndex,
+            cursor: 'pointer'
+          }
+        }).appendTo('body');
+      }
+
+      this.popupBg = $('#popup-bg');
+      this.popupBg.show();
+
+      return this;
+    }
+
+    close() {
+      this._opened = false;
+      if (this.options.classAnimateHide !== '') {
+        this.self.removeClass(this.options.classAnimateShow);
+        this.self.addClass('animated ' + this.options.classAnimateHide);
+        setTimeout(() => {
+          this.self.hide();
+        }, this.options.time);
+      } else {
+        this.self.fadeOut(this.options.time).css({transform: this._thisTransformHideDefault});
+        this.self.removeClass('animated ' + this.options.classAnimateShow);
+      }
+      this.popupBg.fadeOut(this.options.time);
+      this.lock('-lock', '-popup-opened');
+      this.options.onPopupClose();
+      return this;
+    }
+
+    popupPosition() {
+      this.self.css({
+        top: this._window.height() / 2 - this.self.outerHeight() / 2,
+        left: this._window.width() / 2 - this.self.outerWidth() / 2
+      });
+      return this
+    }
+
+    popupPositionRezise() {
+      const $ = this.self.offsetParent();
+      if (this._thisHeight > this._window.height()) {
+        this.self.css({top: -$.offset().top + this._window.scrollTop() + 5})
+      } else {
+        this.self.css({top: -$.offset().top + this._window.scrollTop() + this._window.height() / 2 - this.self.outerHeight() / 2})
+      }
+      if (this.self.outerWidth() > this._window.width()) {
+        this.self.css({left: -$.offset().left + this._window.scrollLeft() + 5})
+      } else {
+        this.self.css({left: -$.offset().left + this._window.scrollLeft() + this._window.width() / 2 - this.self.outerWidth() / 2})
+      }
+      return this
+    }
+
+    events() {
+      this.popupBg.on({
+        click: () => {
+          this._opened && this.close();
+        }
+      });
+      $('.js-popup-close', this.self).on({
+        click: () => {
+          this.close();
+        }
+      });
+      $(document).on({
+        keydown: (e) => {
+          if (e.code === 'Escape') {
+            this._opened && this.close();
+          }
+        }
+      });
+    }
+  }
+
+  $.fn.popup = function (options) {
+    if (!this.data('popup')) {
+      this.data('popup', new Popup(this, options));
+    } else {
+      this.data('popup').init();
+    }
+
+    return this;
+  }
+})(jQuery, window);
