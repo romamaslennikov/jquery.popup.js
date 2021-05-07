@@ -111,7 +111,7 @@
       return this;
     }
 
-    close() {
+    close(flag) {
       this._opened = false;
       if (this.options.classAnimateHide !== '') {
         this.self.removeClass(this.options.classAnimateShow);
@@ -123,7 +123,9 @@
         this.self.fadeOut(this.options.time).css({transform: this._thisTransformHideDefault});
         this.self.removeClass('animated ' + this.options.classAnimateShow);
       }
-      this.popupBg.fadeOut(this.options.time);
+      if (!flag) {
+        this.popupBg.fadeOut(this.options.time);
+      }
       this.lock('-lock', '-popup-opened');
       this.options.onPopupClose();
       return this;
